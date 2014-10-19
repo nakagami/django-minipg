@@ -60,6 +60,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     nulls_order_largest = True
     has_case_insensitive_like = False
     requires_sqlparse_for_splitting = False
+    supports_paramstyle_pyformat = False
 
 
 class DatabaseWrapper(BaseDatabaseWrapper):
