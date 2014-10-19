@@ -13,7 +13,6 @@ from postgresql_minipg.creation import DatabaseCreation
 from postgresql_minipg.version import get_version
 from postgresql_minipg.introspection import DatabaseIntrospection
 from postgresql_minipg.schema import DatabaseSchemaEditor
-from django.db.utils import InterfaceError
 from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeText, SafeBytes
@@ -59,7 +58,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     can_rollback_ddl = True
     supports_combined_alters = True
     nulls_order_largest = True
-    closed_cursor_error_class = InterfaceError
     has_case_insensitive_like = False
     requires_sqlparse_for_splitting = False
 
