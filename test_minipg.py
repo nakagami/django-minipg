@@ -12,6 +12,9 @@
 # database backends as possible.  You may want to create a separate settings
 # file for each of the backends you test against.
 
+USE_TZ=True
+TIME_ZONE = 'Asia/Tokyo'
+
 DATABASES = {
     'default': {
         'ENGINE': 'postgresql_minipg',
