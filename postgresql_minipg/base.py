@@ -136,6 +136,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         settings_dict = self.settings_dict
         tz = 'UTC' if settings.USE_TZ else settings_dict.get('TIME_ZONE')
         if tz:
+            self.connection.tzinfo = utc if settings.USE_TZ else None
             cursor = self.connection.cursor()
             try:
                 cursor.execute(self.ops.set_time_zone_sql(), [tz])
@@ -147,7 +148,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def create_cursor(self):
         cursor = self.connection.cursor()
-        cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
         return cursor
 
     def _set_autocommit(self, autocommit):
