@@ -136,7 +136,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         settings_dict = self.settings_dict
         tz = 'UTC' if settings.USE_TZ else settings_dict.get('TIME_ZONE')
         if tz:
-            self.connection.tzinfo = utc if settings.USE_TZ else None
+            if settings.USE_TZ:
+                self.connection.use_tzinfo = True
+                self.connection.tzinfo = utc
+            else:
+                self.connection.use_tzinfo = False
+                self.connection.tzinfo = None
             cursor = self.connection.cursor()
             try:
                 cursor.execute(self.ops.set_time_zone_sql(), [tz])
