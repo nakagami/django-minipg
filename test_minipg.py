@@ -12,7 +12,7 @@
 # database backends as possible.  You may want to create a separate settings
 # file for each of the backends you test against.
 
-USE_TZ=True
+USE_TZ=False
 TIME_ZONE = 'Asia/Tokyo'
 
 DATABASES = {
