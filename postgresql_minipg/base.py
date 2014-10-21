@@ -43,7 +43,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_select_for_update = True
     has_select_for_update_nowait = True
     has_bulk_insert = True
-    uses_savepoints = False
+    uses_savepoints = True
     supports_tablespaces = True
     supports_transactions = True
     can_introspect_ip_address_field = True
@@ -59,7 +59,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
 
 
 class DatabaseWrapper(BaseDatabaseWrapper):
-    vendor = 'postgresql_minipg'
+    vendor = 'postgresql'
     operators = {
         'exact': '= %s',
         'iexact': '= UPPER(%s)',
@@ -183,3 +183,13 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     def pg_version(self):
         with self.temporary_connection():
             return get_version(self.connection)
+
+    def validate_no_broken_transaction(self):
+        from django.db.transaction import TransactionManagementError
+        if self.needs_rollback:
+            self.connection.rollback()
+#        if self.needs_rollback:
+#            raise TransactionManagementError(
+#                "An error occurred in the current transaction. You can't "
+#                "execute queries until the end of the 'atomic' block.")
+#
