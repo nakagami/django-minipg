@@ -184,13 +184,3 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     def pg_version(self):
         with self.temporary_connection():
             return get_version(self.connection)
-
-    def validate_no_broken_transaction(self):
-        from django.db.transaction import TransactionManagementError
-        if self.needs_rollback:
-            self.connection.rollback()
-#        if self.needs_rollback:
-#            raise TransactionManagementError(
-#                "An error occurred in the current transaction. You can't "
-#                "execute queries until the end of the 'atomic' block.")
-#
