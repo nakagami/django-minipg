@@ -55,10 +55,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_case_insensitive_like = False
     requires_sqlparse_for_splitting = False
     supports_paramstyle_pyformat = False
+    has_zoneinfo_database = False
 
 
 class DatabaseWrapper(BaseDatabaseWrapper):
-    vendor = 'postgresql'
+    vendor = 'postgresql_minipg'
     operators = {
         'exact': '= %s',
         'iexact': '= UPPER(%s)',
