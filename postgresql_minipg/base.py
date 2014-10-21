@@ -34,12 +34,6 @@ IntegrityError = Database.IntegrityError
 #psycopg2.extensions.register_adapter(SafeText, psycopg2.extensions.QuotedString)
 
 
-def utc_tzinfo_factory(offset):
-    if offset != 0:
-        raise AssertionError("database connection isn't set to UTC")
-    return utc
-
-
 class DatabaseFeatures(BaseDatabaseFeatures):
     needs_datetime_string_cast = False
     can_return_id_from_insert = True
