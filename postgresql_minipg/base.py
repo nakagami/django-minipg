@@ -151,7 +151,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         return cursor
 
     def _set_autocommit(self, autocommit):
-        self.connection.set_autocommit(autocommit)
+        with self.wrap_database_errors:
+            self.connection.autocommit = autocommit
 
     def check_constraints(self, table_names=None):
         """
@@ -183,3 +184,4 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     def pg_version(self):
         with self.temporary_connection():
             return get_version(self.connection)
+
