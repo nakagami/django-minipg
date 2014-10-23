@@ -17,6 +17,7 @@ from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeText, SafeBytes
 from django.utils.timezone import utc
+from django.utils import six
 
 try:
     import minipg as Database
@@ -27,12 +28,6 @@ except ImportError as e:
 
 DatabaseError = Database.DatabaseError
 IntegrityError = Database.IntegrityError
-
-#psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-#psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
-#psycopg2.extensions.register_adapter(SafeBytes, psycopg2.extensions.QuotedString)
-#psycopg2.extensions.register_adapter(SafeText, psycopg2.extensions.QuotedString)
-
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     needs_datetime_string_cast = False
@@ -88,8 +83,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         super(DatabaseWrapper, self).__init__(*args, **kwargs)
 
         opts = self.settings_dict["OPTIONS"]
-#        RC = psycopg2.extensions.ISOLATION_LEVEL_READ_COMMITTED
-#        self.isolation_level = opts.get('isolation_level', RC)
 
         self.features = DatabaseFeatures(self)
         self.ops = DatabaseOperations(self)
@@ -125,7 +118,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         return conn_params
 
     def get_new_connection(self, conn_params):
-        return Database.connect(**conn_params)
+        conn = Database.connect(**conn_params)
+        conn.encoders[SafeText] = lambda v: u"'" + v.replace(u"'", u"''") + u"'"
+        conn.encoders[SafeBytes] = lambda v: u"'" + (v.decode('utf-8')).replace(u"'", u"''") + u"'"
+        return conn
 
     def init_connection_state(self):
         settings_dict = self.settings_dict
