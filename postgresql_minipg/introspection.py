@@ -101,11 +101,11 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 AND c.relname = %s""", [table_name])
         indexes = {}
         for row in cursor.fetchall():
-            # row[1] (idx.indkey) is stored in the DB as an array. It comes out as
-            # a string of space-separated integers. This designates the field
+            # row[1] (idx.indkey) is stored in the DB as an array. 
+            # It comes out as an array of integers. This designates the field
             # indexes (1-based) of the fields that have indexes on the table.
             # Here, we skip any indexes across multiple fields.
-            if ' ' in row[1]:
+            if len(row[1]) > 1:
                 continue
             if row[0] not in indexes:
                 indexes[row[0]] = {'primary_key': False, 'unique': False}
