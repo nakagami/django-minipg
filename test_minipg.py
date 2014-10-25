@@ -13,7 +13,7 @@
 # file for each of the backends you test against.
 
 USE_TZ=False
-TIME_ZONE = 'Asia/Tokyo'
+TIME_ZONE = 'America/Chicago'
 
 DATABASES = {
     'default': {
