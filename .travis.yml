@@ -1,0 +1,17 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+
+install:
+  - pip install minipg
+  - python setup.py install
+  - (cd /tmp; wget https://pypi.python.org/packages/source/D/Django/Django-1.6.8.tar.gz; tar zxf Django-1.6.8.tar.gz)
+  - (cd /tmp; wget https://pypi.python.org/packages/source/D/Django/Django-1.7.1.tar.gz; tar zxf Django-1.7.1.tar.gz)
+  - cp test_cymysql.py /tmp/Django-1.6.8/tests
+  - cp test_cymysql.py /tmp/Django-1.7.1/tests
+
+script:
+  - (cd /tmp/Django-1.6.8/tests; PYTHONPATH='..' python runtests.py --settings=test_cymysql)
+  - (cd /tmp/Django-1.7.1/tests; PYTHONPATH='..' python runtests.py --settings=test_cymysql)
