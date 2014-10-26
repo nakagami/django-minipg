@@ -29,6 +29,18 @@ except ImportError as e:
 DatabaseError = Database.DatabaseError
 IntegrityError = Database.IntegrityError
 
+def _escape_str(conn, v):
+    return u"'" + v.replace(u"'", u"''") + u"'"
+
+def _escape_bytes(conn, v):
+    return u"'" + (v.decode('utf-8')).replace(u"'", u"''") + u"'"
+
+def _escape_array(conn, v):
+    print(v)
+    s = u','.join([conn.escape_parameter(e) for e in v])
+    print(s)
+    return s
+
 class DatabaseFeatures(BaseDatabaseFeatures):
     needs_datetime_string_cast = False
     can_return_id_from_insert = True
@@ -119,8 +131,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def get_new_connection(self, conn_params):
         conn = Database.connect(**conn_params)
-        conn.encoders[SafeText] = lambda v: u"'" + v.replace(u"'", u"''") + u"'"
-        conn.encoders[SafeBytes] = lambda v: u"'" + (v.decode('utf-8')).replace(u"'", u"''") + u"'"
+        conn.encoders[SafeText] = _escape_str
+        conn.encoders[SafeBytes] = _escape_bytes
+        conn.encoders[list] = _escape_array
+        conn.encoders[tuple] = _escape_array
         return conn
 
     def init_connection_state(self):
