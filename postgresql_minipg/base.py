@@ -36,9 +36,7 @@ def _escape_bytes(conn, v):
     return u"'" + (v.decode('utf-8')).replace(u"'", u"''") + u"'"
 
 def _escape_array(conn, v):
-    print(v)
     s = u','.join([conn.escape_parameter(e) for e in v])
-    print(s)
     return s
 
 class DatabaseFeatures(BaseDatabaseFeatures):
