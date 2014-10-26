@@ -13,5 +13,5 @@ install:
   - cp test_minipg.py /tmp/Django-1.7.1/tests
 
 script:
-  - (cd /tmp/Django-1.6.8/tests; PYTHONPATH='..' python runtests.py --settings=test_cymysql)
-  - (cd /tmp/Django-1.7.1/tests; PYTHONPATH='..' python runtests.py --settings=test_cymysql)
+  - (cd /tmp/Django-1.6.8/tests; PYTHONPATH='..' python runtests.py --settings=test_minipg)
+  - (cd /tmp/Django-1.7.1/tests; PYTHONPATH='..' python runtests.py --settings=test_minipg)
