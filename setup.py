@@ -15,7 +15,7 @@ classifiers = [
 ]
 
 setup(name='django-minipg', 
-        version='0.1.0',
+        version='0.1.1',
         description = __doc__, 
         url='https://github.com/nakagami/django-minipg/',
         classifiers=classifiers,
