@@ -99,7 +99,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         with self._nodb_connection.cursor() as cursor:
             try:
                 cursor.connection._execute(
-                    "CREATE DATABASE %s %s" % (qn(test_database_name), suffix))
+                    "CREATE DATABASE %s %s" % (qn(test_database_name), suffix), None)
             except Exception as e:
                 sys.stderr.write(
                     "Got an error creating the test database: %s\n" % e)
@@ -113,10 +113,10 @@ class DatabaseCreation(BaseDatabaseCreation):
                             print("Destroying old test database '%s'..."
                                   % self.connection.alias)
                         cursor.connection._execute(
-                            "DROP DATABASE %s" % qn(test_database_name))
+                            "DROP DATABASE %s" % qn(test_database_name), None)
                         cursor.connection._execute(
                             "CREATE DATABASE %s %s" % (qn(test_database_name),
-                                                       suffix))
+                                                       suffix), None)
                     except Exception as e:
                         sys.stderr.write(
                             "Got an error recreating the test database: %s\n" % e)
@@ -137,5 +137,5 @@ class DatabaseCreation(BaseDatabaseCreation):
             # Wait to avoid "database is being accessed by other users" errors.
             time.sleep(1)
             cursor.connection._execute("DROP DATABASE %s"
-                           % self.connection.ops.quote_name(test_database_name))
+                           % self.connection.ops.quote_name(test_database_name), None)
 
