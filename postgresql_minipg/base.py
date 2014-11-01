@@ -195,6 +195,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def _savepoint_rollback(self, sid):
         with self.temporary_connection():
-            return self.connection._execute(self.ops.savepoint_rollback_sql(sid))
+            return self.connection._execute(self.ops.savepoint_rollback_sql(sid), None)
 
 
