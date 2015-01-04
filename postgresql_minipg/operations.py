@@ -35,6 +35,7 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def date_trunc_sql(self, lookup_type, field_name):
         # http://www.postgresql.org/docs/current/static/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC
+        print( "DATE_TRUNC('%s', %s)" % (lookup_type, field_name))
         return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
 
     def datetime_extract_sql(self, lookup_type, field_name, tzname):
