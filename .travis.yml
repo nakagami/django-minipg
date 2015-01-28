@@ -8,8 +8,8 @@ python:
 install:
   - pip install git+https://github.com/nakagami/minipg.git
   - python setup.py install
-  - (cd /tmp; wget https://pypi.python.org/packages/source/D/Django/Django-1.7.2.tar.gz; tar zxf Django-1.7.2.tar.gz)
-  - cp test_minipg.py /tmp/Django-1.7.2/tests
+  - (cd /tmp; wget https://pypi.python.org/packages/source/D/Django/Django-1.7.4.tar.gz; tar zxf Django-1.7.4.tar.gz)
+  - cp test_minipg.py /tmp/Django-1.7.4/tests
 
 script:
-  - (cd /tmp/Django-1.7.2/tests; PYTHONPATH='..' python runtests.py --settings=test_minipg)
+  - (cd /tmp/Django-1.7.4/tests; PYTHONPATH='..' python runtests.py --settings=test_minipg)
