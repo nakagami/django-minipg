@@ -91,9 +91,6 @@ class DatabaseCreation(BaseDatabaseCreation):
         """
         Internal implementation - creates the test db tables.
         """
-        if len(args) != 2:  # != django 1.7
-            super(DatabaseCreation, self)._create_test_db(*args)
-
         verbosity = args[0]
         autoclobber = args[1]
         from django.utils.six.moves import input
