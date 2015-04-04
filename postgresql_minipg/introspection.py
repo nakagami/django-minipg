@@ -40,7 +40,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
 
     def get_field_type(self, data_type, description):
         field_type = super(DatabaseIntrospection, self).get_field_type(data_type, description)
-        if hasattr(description, 'extra'):   # 1.8
+        if hasattr(description, 'default'):   # 1.8
             if field_type == 'IntegerField' and description.default and 'nextval' in description.default:
                 return 'AutoField'
         return field_type
