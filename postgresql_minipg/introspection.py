@@ -8,7 +8,7 @@ except ImportError:
     from django.db.backends.base.introspection import (
         BaseDatabaseIntrospection, FieldInfo, TableInfo,
     )
-    FieldInfo = namedtuple('FieldInfo', FieldInfo._fields + ('extra',))
+    FieldInfo = namedtuple('FieldInfo', FieldInfo._fields + ('default',))
 
 from django.utils.encoding import force_text
 
