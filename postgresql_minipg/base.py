@@ -60,6 +60,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'DateField': 'date',
         'DateTimeField': 'timestamp with time zone',
         'DecimalField': 'numeric(%(max_digits)s, %(decimal_places)s)',
+        'DurationField': 'interval',
         'FileField': 'varchar(%(max_length)s)',
         'FilePathField': 'varchar(%(max_length)s)',
         'FloatField': 'double precision',
@@ -75,6 +76,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'SmallIntegerField': 'smallint',
         'TextField': 'text',
         'TimeField': 'time',
+        'UUIDField': 'uuid',
     }
     data_type_check_constraints = {
         'PositiveIntegerField': '"%(column)s" >= 0',

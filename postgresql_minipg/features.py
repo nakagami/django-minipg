@@ -3,7 +3,9 @@ PostgreSQL database backend for Django.
 
 Requires minipg: https://pypi.python.org/pypi/minipg
 """
+from __future__ import unicode_literals
 
+import django
 try:
     from django.db.backends import BaseDatabaseFeatures
 except ImportError: # 1.8
@@ -26,7 +28,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     can_release_savepoints = True
     supports_tablespaces = True
     supports_transactions = True
-    can_introspect_autofield = True
+    can_introspect_autofield = django.VERSION[1] > 7
     can_introspect_ip_address_field = True
     can_introspect_small_integer_field = True
     can_distinct_on_fields = True
