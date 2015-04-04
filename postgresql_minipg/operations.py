@@ -19,12 +19,16 @@ class DatabaseOperations(BaseDatabaseOperations):
         else:
             return "EXTRACT('%s' FROM %s)" % (lookup_type, field_name)
 
-    def date_interval_sql(self, sql, connector, timedelta):
+    def date_interval_sql(self, *args):
         """
         implements the interval functionality for expressions
         format for Postgres:
             (datefield + interval '3 days 200 seconds 5 microseconds')
         """
+        if len(args) != 3:  # != 1.7
+            return super(DatabaseOperations, self).date_interval_sql(*args)
+
+        sql, connector, timedelta = args
         modifiers = []
         if timedelta.days:
             modifiers.append('%s days' % timedelta.days)
@@ -80,7 +84,6 @@ class DatabaseOperations(BaseDatabaseOperations):
             lookup = 'UPPER(%s)' % lookup
 
         return lookup
-
 
     def field_cast_sql(self, db_type, internal_type):
         if internal_type == "GenericIPAddressField" or internal_type == "IPAddressField":
