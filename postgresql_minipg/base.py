@@ -3,7 +3,7 @@ PostgreSQL database backend for Django.
 
 Requires minipg: https://pypi.python.org/pypi/minipg
 """
-
+import django
 from django.conf import settings
 try:
     from django.db.backends import BaseDatabaseWrapper
@@ -99,23 +99,29 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'iendswith': 'LIKE UPPER(%s)',
     }
 
-    # The patterns below are used to generate SQL pattern lookup clauses when
-    # the right-hand side of the lookup isn't a raw string (it might be an expression
-    # or the result of a bilateral transformation).
-    # In those cases, special characters for LIKE operators (e.g. \, *, _) should be
-    # escaped on database side.
-    #
-    # Note: we use str.format() here for readability as '%' is used as a wildcard for
-    # the LIKE operator.
-    pattern_esc = r"REPLACE(REPLACE(REPLACE({}, '\', '\\'), '%%', '\%%'), '_', '\_')"
-    pattern_ops = {
-        'contains': "LIKE '%%' || {} || '%%'",
-        'icontains': "LIKE '%%' || UPPER({}) || '%%'",
-        'startswith': "LIKE {} || '%%'",
-        'istartswith': "LIKE UPPER({}) || '%%'",
-        'endswith': "LIKE '%%' || {}",
-        'iendswith': "LIKE '%%' || UPPER({})",
-    }
+    if django.VERSION[1] == 7:  # 1.7
+        pattern_ops = {
+            'startswith': "LIKE %s || '%%%%'",
+            'istartswith': "LIKE UPPER(%s) || '%%%%'",
+        }
+    else:
+        # The patterns below are used to generate SQL pattern lookup clauses when
+        # the right-hand side of the lookup isn't a raw string (it might be an expression
+        # or the result of a bilateral transformation).
+        # In those cases, special characters for LIKE operators (e.g. \, *, _) should be
+        # escaped on database side.
+        #
+        # Note: we use str.format() here for readability as '%' is used as a wildcard for
+        # the LIKE operator.
+        pattern_esc = r"REPLACE(REPLACE(REPLACE({}, '\', '\\'), '%%', '\%%'), '_', '\_')"
+        pattern_ops = {
+            'contains': "LIKE '%%' || {} || '%%'",
+            'icontains': "LIKE '%%' || UPPER({}) || '%%'",
+            'startswith': "LIKE {} || '%%'",
+            'istartswith': "LIKE UPPER({}) || '%%'",
+            'endswith': "LIKE '%%' || {}",
+            'iendswith': "LIKE '%%' || UPPER({})",
+        }
 
 
     Database = Database

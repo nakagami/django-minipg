@@ -10,7 +10,7 @@ try:
     from django.db.backends import BaseDatabaseFeatures
 except ImportError: # 1.8
     from django.db.backends.base.features import BaseDatabaseFeatures
-from django.db.utils import InterfaceError
+from django.db.utils import ProgrammingError
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     needs_datetime_string_cast = False
@@ -35,7 +35,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     can_rollback_ddl = True
     supports_combined_alters = True
     nulls_order_largest = True
-    closed_cursor_error_class = InterfaceError
+    closed_cursor_error_class = ProgrammingError
     has_case_insensitive_like = False
     requires_sqlparse_for_splitting = False
     supports_paramstyle_pyformat = False
