@@ -46,7 +46,7 @@ def _escape_array(conn, v):
     return s
 
 class DatabaseWrapper(BaseDatabaseWrapper):
-    vendor = 'postgresql'
+    vendor = 'minipg'
     operators = {
         'exact': '= %s',
         'iexact': '= UPPER(%s)',
