@@ -12,13 +12,13 @@ class DatabaseCreation(BaseDatabaseCreation):
     @cached_property
     def data_types(self):
         # fallback propery for 1.6 and 1.7
-        from mysql_minipg.base import DatabaseWrapper
+        from postgresql_minipg.base import DatabaseWrapper
         return DatabaseWrapper.data_types
 
     @cached_property
     def data_type_check_constraints(self):
         # fallback propery for 1.6 and 1.7
-        from mysql_minipg.base import DatabaseWrapper
+        from postgresql_minipg.base import DatabaseWrapper
         return DatabaseWrapper.data_type_check_constraints
 
     def sql_table_creation_suffix(self):
