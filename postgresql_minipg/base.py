@@ -25,7 +25,6 @@ from django.utils.functional import cached_property
 from django.utils.safestring import SafeText, SafeBytes
 from django.utils.timezone import utc
 from django.utils import six
-from django.db.backends.postgresql_psycopg2.utils import utc_tzinfo_factory
 
 try:
     import minipg as Database
@@ -139,7 +138,11 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def create_cursor(self):
         cursor = self.connection.cursor()
-        cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
+        try:
+            from django.db.backends.postgresql_psycopg2.utils import utc_tzinfo_factory
+            cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
+        except ImportError:
+            pass
         return cursor
 
     def _set_autocommit(self, autocommit):

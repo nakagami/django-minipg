@@ -87,10 +87,15 @@ class DatabaseCreation(BaseDatabaseCreation):
                                             ' text_pattern_ops'))
         return output
 
-    def _create_test_db(self, verbosity, autoclobber, keepdb=False):
+    def _create_test_db(self, *args):
         """
         Internal implementation - creates the test db tables.
         """
+        if len(args) != 2:  # != django 1.7
+            super(DatabaseCreation, self)._create_test_db(*args)
+
+        verbosity = args[0]
+        autoclobber = args[1]
         from django.utils.six.moves import input
         suffix = self.sql_table_creation_suffix()
 
