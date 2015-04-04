@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.db.backends import BaseDatabaseOperations
+try:
+    from django.db.backends import BaseDatabaseOperations
+except ImportError: # 1.8
+    from django.db.backends.base.operations import BaseDatabaseOperations
 
 
 class DatabaseOperations(BaseDatabaseOperations):

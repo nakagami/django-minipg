@@ -6,22 +6,26 @@ Requires minipg: https://pypi.python.org/pypi/minipg
 
 from django.conf import settings
 try:
-    from django.db.backends import BaseDatabaseWrapper, BaseDatabaseValidation
+    from django.db.backends import BaseDatabaseWrapper
 except ImportError: # 1.8
-    from django.db.backends.base.base import BaseDatabaseWrapper, BaseDatabaseValidation
+    from django.db.backends.base.base import BaseDatabaseWrapper
+try:
+    from django.db.backends import BaseDatabaseValidation
+except ImportError: # 1.8
+    from django.db.backends.base.validation import BaseDatabaseValidation
 from postgresql_minipg.client import DatabaseClient
 from postgresql_minipg.creation import DatabaseCreation
 from postgresql_minipg.features import DatabaseFeatures
 from postgresql_minipg.introspection import DatabaseIntrospection
 from postgresql_minipg.operations import DatabaseOperations
 from postgresql_minipg.schema import DatabaseSchemaEditor
-from postgresql_minipg.utils import utc_tzinfo_factory
 from postgresql_minipg.version import get_version
 from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeText, SafeBytes
 from django.utils.timezone import utc
 from django.utils import six
+from django.db.backends.postgresql_psycopg2.utils import utc_tzinfo_factory
 
 try:
     import minipg as Database

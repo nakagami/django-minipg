@@ -1,8 +1,10 @@
 import sys
 import time
-from django.db.backends.creation import BaseDatabaseCreation
+try:
+    from django.db.backends.creation import BaseDatabaseCreation
+except ImportError:
+    from django.db.backends.base.creation import BaseDatabaseCreation
 from django.db.backends.utils import truncate_name
-from django.utils.six.moves import input
 
 
 class DatabaseCreation(BaseDatabaseCreation):
@@ -89,6 +91,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         """
         Internal implementation - creates the test db tables.
         """
+        from django.utils.six.moves import input
         suffix = self.sql_table_creation_suffix()
 
         test_database_name = self._get_test_db_name()
