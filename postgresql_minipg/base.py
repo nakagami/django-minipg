@@ -5,14 +5,18 @@ Requires minipg: https://pypi.python.org/pypi/minipg
 """
 
 from django.conf import settings
-from django.db.backends import (BaseDatabaseFeatures, BaseDatabaseWrapper,
-    BaseDatabaseValidation)
-from postgresql_minipg.operations import DatabaseOperations
+try:
+    from django.db.backends import BaseDatabaseWrapper, BaseDatabaseValidation
+except ImportError: # 1.8
+    from django.db.backends.base.base import BaseDatabaseWrapper, BaseDatabaseValidation
 from postgresql_minipg.client import DatabaseClient
 from postgresql_minipg.creation import DatabaseCreation
-from postgresql_minipg.version import get_version
+from postgresql_minipg.features import DatabaseFeatures
 from postgresql_minipg.introspection import DatabaseIntrospection
+from postgresql_minipg.operations import DatabaseOperations
 from postgresql_minipg.schema import DatabaseSchemaEditor
+from postgresql_minipg.utils import utc_tzinfo_factory
+from postgresql_minipg.version import get_version
 from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeText, SafeBytes
@@ -21,7 +25,6 @@ from django.utils import six
 
 try:
     import minipg as Database
-#    import psycopg2.extensions
 except ImportError as e:
     from django.core.exceptions import ImproperlyConfigured
     raise ImproperlyConfigured("Error loading minipg module: %s" % e)
@@ -38,30 +41,6 @@ def _escape_bytes(conn, v):
 def _escape_array(conn, v):
     s = u','.join([conn.escape_parameter(e) for e in v])
     return s
-
-class DatabaseFeatures(BaseDatabaseFeatures):
-    needs_datetime_string_cast = False
-    can_return_id_from_insert = True
-    requires_rollback_on_dirty_transaction = True
-    has_real_datatype = True
-    can_defer_constraint_checks = True
-    has_select_for_update = True
-    has_select_for_update_nowait = True
-    has_bulk_insert = True
-    uses_savepoints = True
-    supports_tablespaces = True
-    supports_transactions = True
-    can_introspect_ip_address_field = True
-    can_introspect_small_integer_field = True
-    can_distinct_on_fields = True
-    can_rollback_ddl = True
-    supports_combined_alters = True
-    nulls_order_largest = True
-    has_case_insensitive_like = False
-    requires_sqlparse_for_splitting = False
-    supports_paramstyle_pyformat = False
-    has_zoneinfo_database = False
-
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'postgresql'
@@ -156,6 +135,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def create_cursor(self):
         cursor = self.connection.cursor()
+        cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
         return cursor
 
     def _set_autocommit(self, autocommit):
