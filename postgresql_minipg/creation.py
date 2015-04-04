@@ -87,7 +87,7 @@ class DatabaseCreation(BaseDatabaseCreation):
                                             ' text_pattern_ops'))
         return output
 
-    def _create_test_db(self, verbosity, autoclobber):
+    def _create_test_db(self, verbosity, autoclobber, keepdb=False):
         """
         Internal implementation - creates the test db tables.
         """
