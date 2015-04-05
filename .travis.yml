@@ -6,6 +6,7 @@ python:
   - "3.4"
 
 install:
+  - pip uninstall -y numpy
   - pip install git+https://github.com/nakagami/minipg.git
   - python setup.py install
   - (cd /tmp; wget https://pypi.python.org/packages/source/D/Django/Django-1.7.7.tar.gz; tar zxf Django-1.7.7.tar.gz)
