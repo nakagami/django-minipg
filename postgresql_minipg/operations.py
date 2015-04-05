@@ -25,10 +25,12 @@ class DatabaseOperations(BaseDatabaseOperations):
         format for Postgres:
             (datefield + interval '3 days 200 seconds 5 microseconds')
         """
-        if len(args) != 3:  # != 1.7
-            return super(DatabaseOperations, self).date_interval_sql(*args)
+        if len(args) == 3:  # 1.7
+            sql, connector, timedelta = args
+        else:
+            sql = connector = ''
+            timedelta = args[0]
 
-        sql, connector, timedelta = args
         modifiers = []
         if timedelta.days:
             modifiers.append('%s days' % timedelta.days)
