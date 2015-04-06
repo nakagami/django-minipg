@@ -8,8 +8,18 @@ except ImportError: # 1.8
 
 
 class DatabaseOperations(BaseDatabaseOperations):
-    def __init__(self, connection):
-        super(DatabaseOperations, self).__init__(connection)
+    def unification_cast_sql(self, output_field):
+        internal_type = output_field.get_internal_type()
+        if internal_type in ("TimeField", "UUIDField"):
+            # PostgreSQL will resolve a union as type 'text' if input types are
+            # 'unknown'.
+            # http://www.postgresql.org/docs/9.4/static/typeconv-union-case.html
+            # These fields cannot be implicitly cast back in the default
+            # PostgreSQL configuration so we need to explicitly cast them.
+            # We must also remove components of the type within brackets:
+            # varchar(255) -> varchar.
+            return 'CAST(%%s AS %s)' % output_field.db_type(self.connection).split('(')[0]
+        return '%s'
 
     def date_extract_sql(self, lookup_type, field_name):
         # http://www.postgresql.org/docs/current/static/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT
@@ -79,7 +89,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         # Cast text lookups to text to allow things like filter(x__contains=4)
         if lookup_type in ('iexact', 'contains', 'icontains', 'startswith',
                            'istartswith', 'endswith', 'iendswith', 'regex', 'iregex'):
-            lookup = "%s::text"
+                lookup = "%s::text"
 
         # Use UPPER(x) for case-insensitive lookups; it's faster.
         if lookup_type in ('iexact', 'icontains', 'istartswith', 'iendswith'):
@@ -168,27 +178,35 @@ class DatabaseOperations(BaseDatabaseOperations):
 
             for f in model._meta.local_fields:
                 if isinstance(f, models.AutoField):
-                    output.append("%s setval(pg_get_serial_sequence('%s','%s'), coalesce(max(%s), 1), max(%s) %s null) %s %s;" %
-                        (style.SQL_KEYWORD('SELECT'),
-                        style.SQL_TABLE(qn(model._meta.db_table)),
-                        style.SQL_FIELD(f.column),
-                        style.SQL_FIELD(qn(f.column)),
-                        style.SQL_FIELD(qn(f.column)),
-                        style.SQL_KEYWORD('IS NOT'),
-                        style.SQL_KEYWORD('FROM'),
-                        style.SQL_TABLE(qn(model._meta.db_table))))
+                    output.append(
+                        "%s setval(pg_get_serial_sequence('%s','%s'), "
+                        "coalesce(max(%s), 1), max(%s) %s null) %s %s;" % (
+                            style.SQL_KEYWORD('SELECT'),
+                            style.SQL_TABLE(qn(model._meta.db_table)),
+                            style.SQL_FIELD(f.column),
+                            style.SQL_FIELD(qn(f.column)),
+                            style.SQL_FIELD(qn(f.column)),
+                            style.SQL_KEYWORD('IS NOT'),
+                            style.SQL_KEYWORD('FROM'),
+                            style.SQL_TABLE(qn(model._meta.db_table)),
+                        )
+                    )
                     break  # Only one AutoField is allowed per model, so don't bother continuing.
             for f in model._meta.many_to_many:
                 if not f.rel.through:
-                    output.append("%s setval(pg_get_serial_sequence('%s','%s'), coalesce(max(%s), 1), max(%s) %s null) %s %s;" %
-                        (style.SQL_KEYWORD('SELECT'),
-                        style.SQL_TABLE(qn(f.m2m_db_table())),
-                        style.SQL_FIELD('id'),
-                        style.SQL_FIELD(qn('id')),
-                        style.SQL_FIELD(qn('id')),
-                        style.SQL_KEYWORD('IS NOT'),
-                        style.SQL_KEYWORD('FROM'),
-                        style.SQL_TABLE(qn(f.m2m_db_table()))))
+                    output.append(
+                        "%s setval(pg_get_serial_sequence('%s','%s'), "
+                        "coalesce(max(%s), 1), max(%s) %s null) %s %s;" % (
+                            style.SQL_KEYWORD('SELECT'),
+                            style.SQL_TABLE(qn(f.m2m_db_table())),
+                            style.SQL_FIELD('id'),
+                            style.SQL_FIELD(qn('id')),
+                            style.SQL_FIELD(qn('id')),
+                            style.SQL_KEYWORD('IS NOT'),
+                            style.SQL_KEYWORD('FROM'),
+                            style.SQL_TABLE(qn(f.m2m_db_table()))
+                        )
+                    )
         return output
 
     def prep_for_iexact_query(self, x):
@@ -218,7 +236,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         # http://initd.org/psycopg/docs/cursor.html#cursor.query
         # The query attribute is a Psycopg extension to the DB API 2.0.
         if cursor.query is not None:
-            return cursor.query
+            return cursor.query.decode('utf-8')
         return None
 
     def return_insert_id(self):
@@ -227,3 +245,15 @@ class DatabaseOperations(BaseDatabaseOperations):
     def bulk_insert_sql(self, fields, num_values):
         items_sql = "(%s)" % ", ".join(["%s"] * len(fields))
         return "VALUES " + ", ".join([items_sql] * num_values)
+
+    def value_to_db_date(self, value):
+        return value
+
+    def value_to_db_datetime(self, value):
+        return value
+
+    def value_to_db_time(self, value):
+        return value
+
+    def value_to_db_ipaddress(self, value):
+        return value
