@@ -87,11 +87,6 @@ class DatabaseOperations(BaseDatabaseOperations):
 
         return lookup
 
-    def field_cast_sql(self, db_type, internal_type):
-        if internal_type == "GenericIPAddressField" or internal_type == "IPAddressField":
-            return 'HOST(%s)'
-        return '%s'
-
     def last_insert_id(self, cursor, table_name, pk_name):
         # Use pg_get_serial_sequence to get the underlying sequence name
         # from the table name and column name (available since PostgreSQL 8)
