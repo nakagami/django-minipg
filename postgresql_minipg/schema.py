@@ -15,8 +15,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     sql_create_text_index = "CREATE INDEX %(name)s ON %(table)s (%(columns)s text_pattern_ops)%(extra)s"
 
     def quote_value(self, value):
-        import minipg
-        return minipg.escape_paramter.adapt(value)
+        return self.connection.escape_paramter(value)
 
     def _model_indexes_sql(self, model):
         output = super(DatabaseSchemaEditor, self)._model_indexes_sql(model)
