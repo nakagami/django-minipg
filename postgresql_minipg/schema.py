@@ -14,6 +14,10 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     sql_create_varchar_index = "CREATE INDEX %(name)s ON %(table)s (%(columns)s varchar_pattern_ops)%(extra)s"
     sql_create_text_index = "CREATE INDEX %(name)s ON %(table)s (%(columns)s text_pattern_ops)%(extra)s"
 
+    def quote_value(self, value):
+        import minipg
+        return minipg.escape_paramter.adapt(value)
+
     def _model_indexes_sql(self, model):
         output = super(DatabaseSchemaEditor, self)._model_indexes_sql(model)
         if not model._meta.managed or model._meta.proxy or model._meta.swapped:
