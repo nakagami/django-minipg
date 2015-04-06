@@ -24,7 +24,6 @@ from django.utils.encoding import force_str
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeText, SafeBytes
 from django.utils.timezone import utc
-from django.utils import six
 
 try:
     import minipg as Database
@@ -129,8 +128,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def __init__(self, *args, **kwargs):
         super(DatabaseWrapper, self).__init__(*args, **kwargs)
-
-        opts = self.settings_dict["OPTIONS"]
 
         self.features = DatabaseFeatures(self)
         self.ops = DatabaseOperations(self)
