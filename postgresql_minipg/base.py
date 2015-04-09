@@ -187,13 +187,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 self.connection.commit()
 
     def create_cursor(self):
-        cursor = self.connection.cursor()
-        try:
-            from django.db.backends.postgresql_psycopg2.utils import utc_tzinfo_factory
-            cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
-        except ImportError:
-            pass
-        return cursor
+        return self.connection.cursor()
 
     def _set_autocommit(self, autocommit):
         with self.wrap_database_errors:
