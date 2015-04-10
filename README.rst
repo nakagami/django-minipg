@@ -5,7 +5,7 @@ Django PostgreSQL database backend for minipg
 
 ------------
 
-* Django 1.7.x
+* Django 1.7, 1.8
 * minipg (https://github.com/nakagami/minipg)
 
 Installation
