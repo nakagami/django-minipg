@@ -3,33 +3,32 @@ PostgreSQL database backend for Django.
 
 Requires minipg: https://pypi.python.org/pypi/minipg
 """
-import django
+mport threading
+import warnings
+
 from django.conf import settings
-try:
-    from django.db.backends import BaseDatabaseWrapper
-except ImportError: # 1.8
-    from django.db.backends.base.base import BaseDatabaseWrapper
-try:
-    from django.db.backends import BaseDatabaseValidation
-except ImportError: # 1.8
-    from django.db.backends.base.validation import BaseDatabaseValidation
-from postgresql_minipg.client import DatabaseClient
-from postgresql_minipg.creation import DatabaseCreation
-from postgresql_minipg.features import DatabaseFeatures
-from postgresql_minipg.introspection import DatabaseIntrospection
-from postgresql_minipg.operations import DatabaseOperations
-from postgresql_minipg.schema import DatabaseSchemaEditor
-from postgresql_minipg.version import get_version
-from django.utils.encoding import force_str
+from django.core.exceptions import ImproperlyConfigured
+from django.db import DEFAULT_DB_ALIAS
+from django.db.backends.base.base import BaseDatabaseWrapper
+from django.db.utils import DatabaseError as WrappedDatabaseError
 from django.utils.functional import cached_property
-from django.utils.safestring import SafeText, SafeBytes
-from django.utils.timezone import utc
+from django.utils.safestring import SafeText
+from django.utils.version import get_version_tuple
 
 try:
     import minipg as Database
 except ImportError as e:
     from django.core.exceptions import ImproperlyConfigured
     raise ImproperlyConfigured("Error loading minipg module: %s" % e)
+
+from django.db.backends.postgresql.client import DatabaseClient  # NOQA isort:skip
+from .creation import DatabaseCreation                      # NOQA isort:skip
+from .features import DatabaseFeatures                      # NOQA isort:skip
+from django.db.backends.postgresql.introspection import DatabaseIntrosepction # NOQA isort:skip
+from .operations import DatabaseOperations                  # NOQA isort:skip
+from .schema import DatabaseSchemaEditor                    # NOQA isort:skip
+from django.db.backends.postgresql.utils import utc_tzinfo_factory  # NOQA isort:skip
+
 
 DatabaseError = Database.DatabaseError
 IntegrityError = Database.IntegrityError
