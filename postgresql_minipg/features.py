@@ -1,4 +1,4 @@
-from django.db.backends import postgresql
+from django.db.backends.postgresql.features import DatabaseFeatures as BaseFeatures
 
-class DatabaseFeatures(postgresql.features.BaseDatabaseFeatures):
+class DatabaseFeatures(BaseFeatures):
     has_native_uuid_field = False

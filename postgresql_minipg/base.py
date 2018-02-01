@@ -10,25 +10,24 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import DEFAULT_DB_ALIAS
 from django.db.backends.base.base import BaseDatabaseWrapper
-from django.db.backends import postgresql
 from django.db.utils import DatabaseError as WrappedDatabaseError
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeText
 from django.utils.version import get_version_tuple
 
 try:
-    minipg as Database
+    import minipg as Database
 except ImportError as e:
     raise ImproperlyConfigured("Error loading minipg")
 
 # Some of these import psycopg2, so import them after checking if it's installed.
-from postgresql.client import DatabaseClient                # NOQA isort:skip
-from postgresql.creation import DatabaseCreation            # NOQA isort:skip
+from django.db.backends.postgresql.client import DatabaseClient                # NOQA isort:skip
+from django.db.backends.postgresql.creation import DatabaseCreation            # NOQA isort:skip
 from .features import DatabaseFeatures                      # NOQA isort:skip
-from postgresql.introspection import DatabaseIntrospection  # NOQA isort:skip
+from django.db.backends.postgresql.introspection import DatabaseIntrospection  # NOQA isort:skip
 from .operations import DatabaseOperations                  # NOQA isort:skip
 from .schema import DatabaseSchemaEditor                    # NOQA isort:skip
-from postgresql.utils import utc_tzinfo_factory             # NOQA isort:skip
+from django.db.backends.postgresql.utils import utc_tzinfo_factory             # NOQA isort:skip
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'postgresql'
@@ -145,14 +144,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         # - before calling _set_autocommit() because if autocommit is on, that
         #   will set connection.isolation_level to ISOLATION_LEVEL_AUTOCOMMIT.
         options = self.settings_dict['OPTIONS']
-        try:
-            self.isolation_level = options['isolation_level']
-        except KeyError:
-            self.isolation_level = connection.isolation_level
-        else:
-            # Set the isolation level to the value from OPTIONS.
-            if self.isolation_level != connection.isolation_level:
-                connection.set_session(isolation_level=self.isolation_level)
+# TODO:
+#        try:
+#            self.isolation_level = options['isolation_level']
+#        except KeyError:
+#            self.isolation_level = connection.isolation_level
+#        else:
+#            # Set the isolation level to the value from OPTIONS.
+#            if self.isolation_level != connection.isolation_level:
+#                connection.set_session(isolation_level=self.isolation_level)
 
         return connection
 
@@ -167,13 +167,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         return False
 
     def init_connection_state(self):
-        self.connection.set_client_encoding('UTF8')
-
-        timezone_changed = self.ensure_timezone()
-        if timezone_changed:
-            # Commit after setting the time zone (see #17062)
-            if not self.get_autocommit():
-                self.connection.commit()
+# TODO:
+#        self.connection.set_client_encoding('UTF8')
+#
+#        timezone_changed = self.ensure_timezone()
+#        if timezone_changed:
+#            # Commit after setting the time zone (see #17062)
+#            if not self.get_autocommit():
+#                self.connection.commit()
+        pass
 
     def create_cursor(self, name=None):
         if name:
