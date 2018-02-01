@@ -3,7 +3,6 @@ PostgreSQL database backend for Django.
 
 Requires minipg: https://pypi.python.org/pypi/minipg
 """
-
 import threading
 import warnings
 
@@ -22,7 +21,6 @@ try:
 except ImportError as e:
     raise ImproperlyConfigured("Error loading minipg")
 
-
 # Some of these import psycopg2, so import them after checking if it's installed.
 from postgresql.client import DatabaseClient                # NOQA isort:skip
 from postgresql.creation import DatabaseCreation            # NOQA isort:skip
@@ -31,20 +29,6 @@ from postgresql.introspection import DatabaseIntrospection  # NOQA isort:skip
 from .operations import DatabaseOperations                  # NOQA isort:skip
 from .schema import DatabaseSchemaEditor                    # NOQA isort:skip
 from postgresql.utils import utc_tzinfo_factory             # NOQA isort:skip
-
-psycopg2.extensions.register_adapter(SafeText, psycopg2.extensions.QuotedString)
-psycopg2.extras.register_uuid()
-
-# Register support for inet[] manually so we don't have to handle the Inet()
-# object on load all the time.
-INETARRAY_OID = 1041
-INETARRAY = psycopg2.extensions.new_array_type(
-    (INETARRAY_OID,),
-    'INETARRAY',
-    psycopg2.extensions.UNICODE,
-)
-psycopg2.extensions.register_type(INETARRAY)
-
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'postgresql'
@@ -253,8 +237,3 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 alias=self.alias,
                 allow_thread_sharing=False)
         return nodb_connection
-
-    @cached_property
-    def pg_version(self):
-        with self.temporary_connection():
-            return self.connection.server_version
