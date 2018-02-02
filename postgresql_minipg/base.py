@@ -22,7 +22,7 @@ except ImportError as e:
 
 # Some of these import psycopg2, so import them after checking if it's installed.
 from django.db.backends.postgresql.client import DatabaseClient                # NOQA isort:skip
-from django.db.backends.postgresql.creation import DatabaseCreation            # NOQA isort:skip
+from .creation import DatabaseCreation                      # NOQA isort:skip
 from .features import DatabaseFeatures                      # NOQA isort:skip
 from django.db.backends.postgresql.introspection import DatabaseIntrospection  # NOQA isort:skip
 from .operations import DatabaseOperations                  # NOQA isort:skip
@@ -133,6 +133,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params['host'] = settings_dict['HOST']
         if settings_dict['PORT']:
             conn_params['port'] = settings_dict['PORT']
+        if settings_dict['USE_SSL']:
+            conn_params['use_ssl'] = settings_dict['USE_SSL']
         return conn_params
 
     def get_new_connection(self, conn_params):
