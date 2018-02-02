@@ -144,16 +144,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         # - before calling _set_autocommit() because if autocommit is on, that
         #   will set connection.isolation_level to ISOLATION_LEVEL_AUTOCOMMIT.
         options = self.settings_dict['OPTIONS']
-# TODO:
-#        try:
-#            self.isolation_level = options['isolation_level']
-#        except KeyError:
-#            self.isolation_level = connection.isolation_level
-#        else:
-#            # Set the isolation level to the value from OPTIONS.
-#            if self.isolation_level != connection.isolation_level:
-#                connection.set_session(isolation_level=self.isolation_level)
-
+        try:
+            self.isolation_level = options['isolation_level']
+        except KeyError:
+            self.isolation_level = connection.isolation_level
+        else:
+            # Set the isolation level to the value from OPTIONS.
+            if self.isolation_level != connection.isolation_level:
+                with self.connection.cursor() as cursor:
+                    cursor.execute('SET ISOLATION ISOLATION LEVEL {}'.format(self.isolation_level))
         return connection
 
     def ensure_timezone(self):
@@ -167,14 +166,11 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         return False
 
     def init_connection_state(self):
-# TODO:
-#        self.connection.set_client_encoding('UTF8')
-#
-#        timezone_changed = self.ensure_timezone()
-#        if timezone_changed:
-#            # Commit after setting the time zone (see #17062)
-#            if not self.get_autocommit():
-#                self.connection.commit()
+        timezone_changed = self.ensure_timezone()
+        if timezone_changed:
+            # Commit after setting the time zone (see #17062)
+            if not self.get_autocommit():
+                self.connection.commit()
         pass
 
     def create_cursor(self, name=None):
