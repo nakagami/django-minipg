@@ -133,7 +133,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params['host'] = settings_dict['HOST']
         if settings_dict['PORT']:
             conn_params['port'] = settings_dict['PORT']
-        if settings_dict['USE_SSL']:
+        if settings_dict.get('USE_SSL'):
             conn_params['use_ssl'] = settings_dict['USE_SSL']
         return conn_params
 
