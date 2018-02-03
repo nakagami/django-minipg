@@ -5,15 +5,14 @@ Requires minipg: https://pypi.python.org/pypi/minipg
 """
 import threading
 import warnings
+import datetime
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import DEFAULT_DB_ALIAS
 from django.db.backends.base.base import BaseDatabaseWrapper
 from django.db.utils import DatabaseError as WrappedDatabaseError
-from django.utils.functional import cached_property
-from django.utils.safestring import SafeText
-from django.utils.version import get_version_tuple
+from django.utils import timezone
 
 try:
     import minipg as Database
@@ -246,6 +245,42 @@ class CursorWrapper(Database.Cursor):
 
     def executemany(self, query, param_list):
         super().executemany(query, param_list)
+
+    def _convert(self, r):
+        r = list(r)
+        for i in range(len(r)):
+            if (
+                settings.USE_TZ and
+                isinstance(r[i], datetime.datetime) and
+                timezone.is_naive(r[i])
+            ):
+                r[i] = r[i].replace(tzinfo=timezone.utc)
+            elif (
+                not settings.USE_TZ and
+                isinstance(r[i], datetime.datetime) and
+                timezone.is_aware(r[i])
+            ):
+                r[i] = r[i].replace(tzinfo=None)
+
+        return tuple(r)
+
+    def fetchone(self):
+        r = super().fetchone()
+        if r:
+            r = self._convert(r)
+        return r
+
+    def fetchmany(self, size=1):
+        rs = super().fetchmany()
+        for i in range(len(rs)):
+            rs[i] = self._convert(rs[i])
+        return rs
+
+    def fetchall(self):
+        rs = super().fetchall()
+        for i in range(len(rs)):
+            rs[i] = self._convert(rs[i])
+        return rs
 
     def close(self):
         super().close()
