@@ -175,7 +175,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         pass
 
     def create_cursor(self, name=None):
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor(factory=CursorWrapper)
         cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
         return cursor
 
@@ -235,3 +235,18 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     @property
     def pg_version(self):
         return self.connection.server_version
+
+
+class CursorWrapper(Database.Cursor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def execute(self, query, params=None):
+        return super().execute(query, params)
+
+    def executemany(self, query, param_list):
+        super().executemany(query, param_list)
+
+    def close(self):
+        super().close()
+
