@@ -1,6 +1,7 @@
 from django.db.backends.postgresql.features import DatabaseFeatures as BaseFeatures
 
 class DatabaseFeatures(BaseFeatures):
+    supports_paramstyle_pyformat = False
 
     # callproc is not supported
     create_test_procedure_without_params_sql = ''
