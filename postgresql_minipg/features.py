@@ -1,7 +1,6 @@
 from django.db.backends.postgresql.features import DatabaseFeatures as BaseFeatures
 
 class DatabaseFeatures(BaseFeatures):
-    has_native_uuid_field = False
 
     # callproc is not supported
     create_test_procedure_without_params_sql = ''
