@@ -17,18 +17,16 @@ class DatabaseCreation(BaseDatabaseCreation):
         user = self.connection.settings_dict.get('USER')
         password = self.connection.settings_dict.get('PASSWORD')
         port = self.connection.settings_dict.get('PORT')
-        use_ssl = self.connection.settings_dict.get('USE_SSL', False)
-        minipg.create_database(parameters['dbname'], host, user, password, port, use_ssl)
+        minipg.create_database(parameters['dbname'], host, user, password, port)
 
     def _destroy_test_db(self, test_database_name, verbosity=0):
         host = self.connection.settings_dict.get('HOST')
         user = self.connection.settings_dict.get('USER')
         password = self.connection.settings_dict.get('PASSWORD')
         port = self.connection.settings_dict.get('PORT')
-        use_ssl = self.connection.settings_dict.get('USE_SSL', False)
         minipg.drop_database(
             self.connection.ops.quote_name(test_database_name),
-            host, user, password, port, use_ssl
+            host, user, password, port
         )
 
     def _create_test_db(self, verbosity, autoclobber, keepdb=False):
