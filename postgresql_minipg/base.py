@@ -269,7 +269,7 @@ class CursorWrapper(Database.Cursor):
         return r
 
     def fetchmany(self, size=1):
-        rs = super().fetchmany()
+        rs = super().fetchmany(size)
         for i in range(len(rs)):
             rs[i] = self._convert(rs[i])
         return rs
