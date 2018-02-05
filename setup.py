@@ -15,7 +15,7 @@ classifiers = [
 ]
 
 setup(name='django-minipg', 
-        version='0.2.0',
+        version='0.3.0',
         description = __doc__, 
         url='https://github.com/nakagami/django-minipg/',
         classifiers=classifiers,
@@ -24,5 +24,5 @@ setup(name='django-minipg',
         author='Hajime Nakagami',
         author_email='nakagami@gmail.com',
         packages = ['postgresql_minipg'],
-        long_description=__doc__,
+        long_description=open('README.rst').read(),
 )
