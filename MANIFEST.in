@@ -1,0 +1,2 @@
+include README.rst LICENSE test_minipg.py
+recursive-include postgresql_minipg
