@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Yet another Django PostgreSQL database backend for minipg
 """
@@ -9,13 +9,12 @@ classifiers = [
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 3',
     'Topic :: Database',
 ]
 
 setup(name='django-minipg', 
-        version='0.3.1',
+        version='0.3.2',
         description = __doc__, 
         url='https://github.com/nakagami/django-minipg/',
         classifiers=classifiers,
