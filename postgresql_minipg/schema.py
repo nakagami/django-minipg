@@ -21,7 +21,9 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     sql_delete_procedure = 'DROP FUNCTION %(procedure)s(%(param_types)s)'
 
     def quote_value(self, value):
-        return self.connection.connection.escape_parameter(value)
+        if self.connection.connection:
+            return self.connection.connection.escape_parameter(value)
+        return value
 
     def _field_indexes_sql(self, model, field):
         output = super()._field_indexes_sql(model, field)
