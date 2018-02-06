@@ -11,11 +11,13 @@ classifiers = [
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
     'Topic :: Database',
+    'Framework :: Django',
 ]
 
 setup(name='django-minipg', 
-        version='0.3.2',
-        description = __doc__, 
+        version='0.3.3',
+        description='Django database backend for minipg',
+        long_description=open('README.rst').read(),
         url='https://github.com/nakagami/django-minipg/',
         classifiers=classifiers,
         keywords=['PostgreSQL', 'minipg'],
@@ -23,5 +25,4 @@ setup(name='django-minipg',
         author='Hajime Nakagami',
         author_email='nakagami@gmail.com',
         packages = ['postgresql_minipg'],
-        long_description=open('README.rst').read(),
 )
