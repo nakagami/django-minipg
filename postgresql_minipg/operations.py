@@ -19,15 +19,6 @@ class DatabaseOperations(BaseDatabaseOperations):
             return 'CAST(%%s AS %s)' % output_field.db_type(self.connection).split('(')[0]
         return '%s'
 
-    def check_expression_support(self, expression):
-        from django.db.models.functions import Cast, Now, StrIndex
-        if isinstance(expression, Cast):
-            expression.template='(%(expressions)s)::%(db_type)s'
-        elif isinstance(expression, Now):
-            expression.template='STATEMENT_TIMESTAMP()'
-        elif isinstance(expression, StrIndex):
-            expression.function = 'STRPOS'
-
     def date_extract_sql(self, lookup_type, field_name):
         # https://www.postgresql.org/docs/current/static/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT
         if lookup_type == 'week_day':
@@ -214,11 +205,12 @@ class DatabaseOperations(BaseDatabaseOperations):
         """
         return 63
 
-    def distinct_sql(self, fields):
+    def distinct_sql(self, fields, params):
         if fields:
-            return 'DISTINCT ON (%s)' % ', '.join(fields)
+            params = [param for param_list in params for param in param_list]
+            return (['DISTINCT ON (%s)' % ', '.join(fields)], params)
         else:
-            return 'DISTINCT'
+            return ['DISTINCT'], []
 
     def last_executed_query(self, cursor, sql, params):
         return cursor.query
