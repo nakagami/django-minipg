@@ -6,6 +6,15 @@ from django.db.backends.base.operations import BaseDatabaseOperations
 class DatabaseOperations(BaseDatabaseOperations):
     cast_char_field_without_max_length = 'varchar'
 
+    def check_expression_support(self, expression):
+        from django.db.models.functions import Cast, Now, StrIndex
+        if isinstance(expression, Cast):
+            expression.template='(%(expressions)s)::%(db_type)s'
+        elif isinstance(expression, Now):
+            expression.template='STATEMENT_TIMESTAMP()'
+        elif isinstance(expression, StrIndex):
+            expression.function = 'STRPOS'
+
     def unification_cast_sql(self, output_field):
         internal_type = output_field.get_internal_type()
         if internal_type in ("GenericIPAddressField", "IPAddressField", "TimeField", "UUIDField"):
