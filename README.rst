@@ -1,7 +1,7 @@
 django-minipg
 ==============
 
-Django PostgreSQL database backend for minipg
+Django PostgreSQL database backend with minipg
 
 Environment
 -------------
