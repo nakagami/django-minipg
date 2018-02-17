@@ -3,10 +3,17 @@ django-minipg
 
 Django PostgreSQL database backend for minipg
 
-------------
+Environment
+-------------
 
 * Django 2.0
 * minipg (https://github.com/nakagami/minipg)
+
+Restriction
+-------------------
+
+* No support postgresql specific feature  https://docs.djangoproject.com/en/2.0/ref/contrib/postgres/
+* No support PostGIS
 
 Installation
 ------------
