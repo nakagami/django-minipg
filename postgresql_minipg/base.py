@@ -233,7 +233,19 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     @property
     def pg_version(self):
-        return self.connection.server_version
+        v = self.connection.server_version.split('.')
+        n = int(v[0])
+        if len(v) > 0:
+            try:
+                n += int(v[1]) * 100
+            except:
+                pass
+        if len(v) > 1:
+            try:
+                n += int(v[2])
+            except:
+                pass
+        return n
 
 
 class CursorWrapper(Database.Cursor):
