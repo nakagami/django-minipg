@@ -31,7 +31,7 @@ from django.db.backends.postgresql.utils import utc_tzinfo_factory             #
 DatabaseFeatures.gis_enabled = False
 
 class DatabaseWrapper(BaseDatabaseWrapper):
-    vendor = 'postgresql_minipg'
+    vendor = 'minipg'
     display_name = 'PostgreSQL'
     # This dictionary maps Field objects to their associated PostgreSQL column
     # types, as strings. Column-type strings can contain format strings; they'll
