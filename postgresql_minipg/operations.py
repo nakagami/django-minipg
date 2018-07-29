@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import NotSupportedError
 from django.db.backends.base.operations import BaseDatabaseOperations
-from django.db.models.functions import StrIndex
+from django.db.models.functions import Cast, Now, StrIndex
+from django.db.models.functions.math import DecimalInputMixin
 
 
 class DatabaseOperations(BaseDatabaseOperations):
@@ -270,4 +271,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         return prefix
 
 
+Cast.as_minipg = Cast.as_postgresql
+Now.as_minipg = Now.as_postgresql
+DecimalInputMixin.as_minipg = DecimalInputMixin.as_postgresql
 StrIndex.as_minipg = StrIndex.as_postgresql
