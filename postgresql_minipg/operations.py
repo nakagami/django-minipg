@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import NotSupportedError
 from django.db.backends.base.operations import BaseDatabaseOperations
-from django.db.models.functions import Cast, Now, StrIndex
+from django.db.models.functions import Cast, Now, StrIndex, Log
 from django.db.models.functions.math import DecimalInputMixin
 
 
@@ -279,7 +279,8 @@ class DatabaseOperations(BaseDatabaseOperations):
     def ignore_conflicts_suffix_sql(self, ignore_conflicts=None):
         return 'ON CONFLICT DO NOTHING' if ignore_conflicts else super().ignore_conflicts_suffix_sql(ignore_conflicts)
 
-Cast.as_minipg = Cast.as_postgresql
-Now.as_minipg = Now.as_postgresql
-DecimalInputMixin.as_minipg = DecimalInputMixin.as_postgresql
-StrIndex.as_minipg = StrIndex.as_postgresql
+Cast.as_postgresql_subset = Cast.as_postgresql
+Now.as_postgresql_subset = Now.as_postgresql
+DecimalInputMixin.as_postgresql_subset = DecimalInputMixin.as_postgresql
+StrIndex.as_postgresql_subset = StrIndex.as_postgresql
+Log.as_postgresql_subset = Log.as_postgresql
