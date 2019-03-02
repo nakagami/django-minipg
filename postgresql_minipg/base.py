@@ -12,6 +12,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import connections
 from django.db.backends.base.base import BaseDatabaseWrapper
 from django.db.utils import DatabaseError as WrappedDatabaseError
+from django.utils import timezone
 
 try:
     import minipg as Database
