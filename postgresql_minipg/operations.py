@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import NotSupportedError
 from django.db.backends.base.operations import BaseDatabaseOperations
 from django.db.models.functions import Cast, Now, StrIndex, Log
-from django.db.models.functions.math import DecimalInputMixin
 
 
 class DatabaseOperations(BaseDatabaseOperations):
@@ -281,6 +280,5 @@ class DatabaseOperations(BaseDatabaseOperations):
 
 Cast.as_postgresql_subset = Cast.as_postgresql
 Now.as_postgresql_subset = Now.as_postgresql
-DecimalInputMixin.as_postgresql_subset = DecimalInputMixin.as_postgresql
 StrIndex.as_postgresql_subset = StrIndex.as_postgresql
 Log.as_postgresql_subset = Log.as_postgresql
