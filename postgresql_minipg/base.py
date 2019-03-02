@@ -9,10 +9,9 @@ import datetime
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.db import DEFAULT_DB_ALIAS
+from django.db import connections
 from django.db.backends.base.base import BaseDatabaseWrapper
 from django.db.utils import DatabaseError as WrappedDatabaseError
-from django.utils import timezone
 
 try:
     import minipg as Database
@@ -93,7 +92,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     #
     # Note: we use str.format() here for readability as '%' is used as a wildcard for
     # the LIKE operator.
-    pattern_esc = r"REPLACE(REPLACE(REPLACE({}, '\', '\\'), '%%', '\%%'), '_', '\_')"
+    pattern_esc = r"REPLACE(REPLACE(REPLACE({}, E'\\', E'\\\\'), E'%%', E'\\%%'), E'_', E'\\_')"
     pattern_ops = {
         'contains': "LIKE '%%' || {} || '%%'",
         'icontains': "LIKE '%%' || UPPER({}) || '%%'",
@@ -121,6 +120,16 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             raise ImproperlyConfigured(
                 "settings.DATABASES is improperly configured. "
                 "Please supply the NAME value.")
+        if len(settings_dict['NAME'] or '') > self.ops.max_name_length():
+            raise ImproperlyConfigured(
+                "The database name '%s' (%d characters) is longer than "
+                "PostgreSQL's limit of %d characters. Supply a shorter NAME "
+                "in settings.DATABASES." % (
+                    settings_dict['NAME'],
+                    len(settings_dict['NAME']),
+                    self.ops.max_name_length(),
+                )
+            )
         conn_params = {
             'database': settings_dict['NAME'] or 'postgres',
             **settings_dict['OPTIONS'],
@@ -152,8 +161,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         else:
             # Set the isolation level to the value from OPTIONS.
             if self.isolation_level != connection.isolation_level:
-                with self.connection.cursor() as cursor:
-                    cursor.execute('SET ISOLATION ISOLATION LEVEL {}'.format(self.isolation_level))
+                connection.set_session(isolation_level=self.isolation_level)
         return connection
 
     def ensure_timezone(self):
@@ -177,6 +185,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         cursor = self.connection.cursor(factory=CursorWrapper)
         cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
         return cursor
+
 
     def chunked_cursor(self):
         self._named_cursor_idx += 1
@@ -223,12 +232,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 "and will use the default database instead.",
                 RuntimeWarning
             )
-            settings_dict = self.settings_dict.copy()
-            settings_dict['NAME'] = settings.DATABASES[DEFAULT_DB_ALIAS]['NAME']
-            nodb_connection = self.__class__(
-                self.settings_dict.copy(),
-                alias=self.alias,
-                allow_thread_sharing=False)
+            for connection in connections.all():
+                if connection.vendor == 'postgresql' and connection.settings_dict['NAME'] != 'postgres':
+                    return self.__class__(
+                        {**self.settings_dict, 'NAME': connection.settings_dict['NAME']},
+                        alias=self.alias,
+                    )
         return nodb_connection
 
     @property
