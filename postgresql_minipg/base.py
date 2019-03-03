@@ -161,7 +161,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         else:
             # Set the isolation level to the value from OPTIONS.
             if self.isolation_level != connection.isolation_level:
-                connection.set_session(isolation_level=self.isolation_level)
+                with connection.cursor() as cursor:
+                    cursor.execute('SET ISOLATION LEVEL {}'.format(self.isolation_level))
+
         return connection
 
     def ensure_timezone(self):
