@@ -28,8 +28,6 @@ from .operations import DatabaseOperations                  # NOQA isort:skip
 from .schema import DatabaseSchemaEditor                    # NOQA isort:skip
 from django.db.backends.postgresql.utils import utc_tzinfo_factory             # NOQA isort:skip
 
-DatabaseFeatures.gis_enabled = False
-
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'postgresql_subset'
     display_name = 'PostgreSQL'
@@ -236,7 +234,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 RuntimeWarning
             )
             for connection in connections.all():
-                if connection.vendor == 'postgresql' and connection.settings_dict['NAME'] != 'postgres':
+                if connection.vendor == 'postgresql_subset' and connection.settings_dict['NAME'] != 'postgres':
                     return self.__class__(
                         {**self.settings_dict, 'NAME': connection.settings_dict['NAME']},
                         alias=self.alias,

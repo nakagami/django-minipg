@@ -2,4 +2,4 @@ from django.db.backends.postgresql.features import DatabaseFeatures as BaseDatab
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
-    pass
+    gis_enabled = False
