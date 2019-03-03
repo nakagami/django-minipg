@@ -12,6 +12,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import connections
 from django.db.backends.base.base import BaseDatabaseWrapper
 from django.db.utils import DatabaseError as WrappedDatabaseError
+from django.utils.functional import cached_property
 from django.utils import timezone
 
 try:
@@ -241,21 +242,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                     )
         return nodb_connection
 
-    @property
+    @cached_property
     def pg_version(self):
-        v = self.connection.server_version.split('.')
-        n = int(v[0])
-        if len(v) > 0:
-            try:
-                n += int(v[1]) * 100
-            except:
-                pass
-        if len(v) > 1:
-            try:
-                n += int(v[2])
-            except:
-                pass
-        return n
+        with self.temporary_connection():
+            return self.connection.server_version
 
 
 class CursorWrapper(Database.Cursor):
