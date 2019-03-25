@@ -30,7 +30,7 @@ from .schema import DatabaseSchemaEditor                    # NOQA isort:skip
 from django.db.backends.postgresql.utils import utc_tzinfo_factory             # NOQA isort:skip
 
 class DatabaseWrapper(BaseDatabaseWrapper):
-    vendor = 'postgresql_subset'
+    vendor = 'postgresql'
     display_name = 'PostgreSQL'
     # This dictionary maps Field objects to their associated PostgreSQL column
     # types, as strings. Column-type strings can contain format strings; they'll
@@ -237,7 +237,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 RuntimeWarning
             )
             for connection in connections.all():
-                if connection.vendor == 'postgresql_subset' and connection.settings_dict['NAME'] != 'postgres':
+                if connection.vendor == 'postgresql' and connection.settings_dict['NAME'] != 'postgres':
                     return self.__class__(
                         {**self.settings_dict, 'NAME': connection.settings_dict['NAME']},
                         alias=self.alias,
