@@ -24,7 +24,7 @@ except ImportError as e:
 from django.db.backends.postgresql.client import DatabaseClient                # NOQA isort:skip
 from .creation import DatabaseCreation                      # NOQA isort:skip
 from .features import DatabaseFeatures            # NOQA isort:skip
-from django.db.backends.postgresql.introspection import DatabaseIntrospection  # NOQA isort:skip
+from .introspection import DatabaseIntrospection  # NOQA isort:skip
 from .operations import DatabaseOperations                  # NOQA isort:skip
 from .schema import DatabaseSchemaEditor                    # NOQA isort:skip
 from django.db.backends.postgresql.utils import utc_tzinfo_factory             # NOQA isort:skip
