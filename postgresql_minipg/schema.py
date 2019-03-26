@@ -20,6 +20,11 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
 
     sql_delete_procedure = 'DROP FUNCTION %(procedure)s(%(param_types)s)'
 
+    def execute(self, sql, params=()):
+        if self.connection.connection._trans_status == b'E':
+            self.connection.connection._rollback()
+        return super().execute(sql, params)
+
     def quote_value(self, value):
         if self.connection.connection:
             return self.connection.connection.escape_parameter(value)

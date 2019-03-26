@@ -163,6 +163,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             if self.isolation_level != connection.isolation_level:
                 with connection.cursor() as cursor:
                     cursor.execute('SET ISOLATION LEVEL {}'.format(self.isolation_level))
+        with connection.cursor() as cursor:
+            cursor.execute('CREATE EXTENSION IF NOT EXISTS "pgcrypto"')
 
         return connection
 
