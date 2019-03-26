@@ -257,9 +257,15 @@ class CursorWrapper(Database.Cursor):
         super().__init__(*args, **kwargs)
 
     def execute(self, query, params=None):
+        if (query.split()[0].upper() == 'DELETE'
+            and self.connection._trans_status == b'E'):
+            self.connection._rollback()
         return super().execute(query, params)
 
     def executemany(self, query, param_list):
+        if (query.split()[0].upper() == 'DELETE'
+            and self.connection._trans_status == b'E'):
+            self.connection._rollback()
         super().executemany(query, param_list)
 
     def _convert(self, r):
