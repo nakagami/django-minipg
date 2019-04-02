@@ -12,6 +12,14 @@ class DatabaseCreation(BaseDatabaseCreation):
     def _quote_name(self, name):
         return self.connection.ops.quote_name(name)
 
+    def _get_database_create_suffix(self, encoding=None, template=None):
+        suffix = ""
+        if encoding:
+            suffix += " ENCODING '{}'".format(encoding)
+        if template:
+            suffix += " TEMPLATE {}".format(self._quote_name(template))
+        return suffix and "WITH" + suffix
+
     def _execute_create_test_db(self, cursor, parameters, keepdb=False):
         host = self.connection.settings_dict.get('HOST')
         user = self.connection.settings_dict.get('USER')
