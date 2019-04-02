@@ -6,14 +6,15 @@ python:
   - "3.4"
 
 install:
-  - pip uninstall -y numpy
+  - pip install pytz
   - pip install git+https://github.com/nakagami/minipg.git
   - python setup.py install
-  - (cd /tmp; wget https://pypi.python.org/packages/source/D/Django/Django-1.7.7.tar.gz; tar zxf Django-1.7.7.tar.gz)
-  - (cd /tmp; wget https://pypi.python.org/packages/source/D/Django/Django-1.8.tar.gz; tar zxf Django-1.8.tar.gz)
-  - cp test_minipg.py /tmp/Django-1.7.7/tests
-  - cp test_minipg.py /tmp/Django-1.8/tests
+  - (cd /tmp; wget https://github.com/django/django/archive/2.2.tar.gz; tar zxf 2.2.tar.gz)
+  - cp test_minipg.py /tmp/django-2.2/tests
+  - cd /tmp/django-2.2/tests
+  - pip install -e ..
+  - pip install -r requirements/py3.txt
 
 script:
-  - (cd /tmp/Django-1.7.7/tests; PYTHONPATH='..' python runtests.py --settings=test_minipg)
-  - (cd /tmp/Django-1.8/tests; PYTHONPATH='..' python runtests.py --settings=test_minipg)
+  - cd /tmp/django-2.2/tests
+  - ./runtests.py --settings=test_minipg --noinput
