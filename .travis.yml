@@ -1,4 +1,6 @@
 dist: trusty
+services:
+  - postgresql
 language: python
 sudo: false
 python:
