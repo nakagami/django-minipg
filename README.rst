@@ -20,8 +20,9 @@ Installation
 
 ::
 
+    $ pip install django==2.2
+    $ pip install django-minipg==0.3.5
     $ pip install minipg
-    $ pip install django-minipg
 
 Settings
 ------------
