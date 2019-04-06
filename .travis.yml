@@ -19,4 +19,4 @@ addons:
 
 script:
   - cd /tmp/django-2.2/tests
-  - ./runtests.py --settings=test_minipg --noinput
+  - ./runtests.py --settings=test_minipg --noinput --parallel=1
