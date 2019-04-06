@@ -27,6 +27,5 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python manage.py test
             cd /tmp/django-2.2/tests
             ./runtests.py --settings=test_minipg --noinput
