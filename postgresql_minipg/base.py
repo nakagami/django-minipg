@@ -169,7 +169,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                     cursor.execute('SET ISOLATION LEVEL {}'.format(self.isolation_level))
         with connection.cursor() as cursor:
             cursor.execute('CREATE EXTENSION IF NOT EXISTS "pgcrypto"')
-        connection.DEBUG_PRINT = False
         return connection
 
     def ensure_timezone(self):
@@ -287,8 +286,6 @@ class CursorWrapper(Database.Cursor):
         if (query.split()[0].upper() == 'DELETE'
             and self.connection._trans_status == b'E'):
             self.connection._rollback()
-        if self.connection.DEBUG_PRINT:
-            print(query, params)
         return super().execute(query, params)
 
     def executemany(self, query, param_list):
