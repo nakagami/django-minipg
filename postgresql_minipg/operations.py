@@ -33,6 +33,8 @@ class DatabaseOperations(BaseDatabaseOperations):
         if lookup_type == 'week_day':
             # For consistency across backends, we return Sunday=1, Saturday=7.
             return "EXTRACT('dow' FROM %s) + 1" % field_name
+        elif lookup_type == 'iso_week_day':
+            return "EXTRACT('isodow' FROM %s)" % field_name
         elif lookup_type == 'iso_year':
             return "EXTRACT('isoyear' FROM %s)" % field_name
         else:
@@ -266,17 +268,9 @@ class DatabaseOperations(BaseDatabaseOperations):
         if internal_type == 'DateField':
             lhs_sql, lhs_params = lhs
             rhs_sql, rhs_params = rhs
-            return "(interval '1 day' * (%s - %s))" % (lhs_sql, rhs_sql), lhs_params + rhs_params
+            params = (*lhs_params, *rhs_params)
+            return "(interval '1 day' * (%s - %s))" % (lhs_sql, rhs_sql), params
         return super().subtract_temporals(internal_type, lhs, rhs)
-
-    def window_frame_range_start_end(self, start=None, end=None):
-        start_, end_ = super().window_frame_range_start_end(start, end)
-        if (start and start < 0) or (end and end > 0):
-            raise NotSupportedError(
-                'PostgreSQL only supports UNBOUNDED together with PRECEDING '
-                'and FOLLOWING.'
-            )
-        return start_, end_
 
     def explain_query_prefix(self, format=None, **options):
         prefix = super().explain_query_prefix(format)
