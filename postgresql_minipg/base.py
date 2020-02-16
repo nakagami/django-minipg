@@ -7,6 +7,7 @@ import asyncio
 import threading
 import warnings
 import datetime
+from contextlib import contextmanager
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -254,11 +255,11 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         else:
             return True
 
-    @property
-    def _nodb_connection(self):
-        nodb_connection = super()._nodb_connection
+    @contextmanager
+    def _nodb_cursor(self):
         try:
-            nodb_connection.ensure_connection()
+            with super()._nodb_cursor() as cursor:
+                yield cursor
         except (Database.DatabaseError, WrappedDatabaseError):
             warnings.warn(
                 "Normally Django will use a connection to the 'postgres' database "
@@ -274,7 +275,11 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                         {**self.settings_dict, 'NAME': connection.settings_dict['NAME']},
                         alias=self.alias,
                     )
-        return nodb_connection
+                    try:
+                        with conn.cursor() as cursor:
+                            yield cursor
+                    finally:
+                        conn.close()
 
     @cached_property
     def pg_version(self):
