@@ -167,10 +167,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         else:
             # Set the isolation level to the value from OPTIONS.
             if self.isolation_level != connection.isolation_level:
-                with connection.cursor() as cursor:
-                    cursor.execute('SET ISOLATION LEVEL {}'.format(self.isolation_level))
-        with connection.cursor() as cursor:
-            cursor.execute('CREATE EXTENSION IF NOT EXISTS "pgcrypto"')
+                connection.set_session(isolation_level=self.isolation_level)
+
         return connection
 
     def ensure_timezone(self):
@@ -243,13 +241,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         Check constraints by setting them to immediate. Return them to deferred
         afterward.
         """
-        self.cursor().execute('SET CONSTRAINTS ALL IMMEDIATE')
-        self.cursor().execute('SET CONSTRAINTS ALL DEFERRED')
+        with self.cursor() as cursor:
+            cursor.execute('SET CONSTRAINTS ALL IMMEDIATE')
+            cursor.execute('SET CONSTRAINTS ALL DEFERRED')
 
     def is_usable(self):
         try:
             # Use a psycopg cursor directly, bypassing Django's utilities.
-            self.connection.cursor().execute("SELECT 1")
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
         except Database.Error:
             return False
         else:
