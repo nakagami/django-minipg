@@ -292,7 +292,7 @@ class CursorWrapper(Database.Cursor):
         super().__init__(*args, **kwargs)
 
     def execute(self, query, params=None):
-        if (query.split()[0].upper() == 'DELETE'
+        if (query.split()[0].upper() in ('CREATE', 'DROP', 'DELETE', 'ALTER')
             and self.connection._trans_status == b'E'):
             self.connection._rollback()
         if self.timezone:
@@ -300,7 +300,7 @@ class CursorWrapper(Database.Cursor):
         return super().execute(query, params)
 
     def executemany(self, query, param_list):
-        if (query.split()[0].upper() == 'DELETE'
+        if (query.split()[0].upper() in ('CREATE', 'DROP', 'DELETE', 'ALTER')
             and self.connection._trans_status == b'E'):
             self.connection._rollback()
         super().executemany(query, param_list)
