@@ -193,11 +193,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     @async_unsafe
     def create_cursor(self, name=None):
         cursor = self.connection.cursor(factory=CursorWrapper)
-        cursor.tzinfo_factory = self.tzinfo_factory if settings.USE_TZ else None
+        cursor.timezone = self.timezone if settings.USE_TZ else None
         return cursor
-
-    def tzinfo_factory(self, offset):
-        return self.timezone
 
     @async_unsafe
     def chunked_cursor(self):
@@ -295,6 +292,8 @@ class CursorWrapper(Database.Cursor):
         if (query.split()[0].upper() == 'DELETE'
             and self.connection._trans_status == b'E'):
             self.connection._rollback()
+        if self.timezone:
+            self.connection.set_timezone(self.timezone)
         return super().execute(query, params)
 
     def executemany(self, query, param_list):
