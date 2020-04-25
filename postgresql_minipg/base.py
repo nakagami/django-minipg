@@ -169,6 +169,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             if self.isolation_level != connection.isolation_level:
                 connection.set_session(isolation_level=self.isolation_level)
 
+        with connection.cursor() as cursor:
+            cursor.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+
         return connection
 
     def ensure_timezone(self):
