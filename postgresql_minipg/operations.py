@@ -4,6 +4,8 @@ from django.db.backends.base.operations import BaseDatabaseOperations
 from django.db.models.functions import Cast, Now, StrIndex, Log
 from django.db.models.functions.text import PostgreSQLSHAMixin
 from django.db.models.functions.math import FixDecimalInputMixin
+from django.db.models.lookups import PostgresOperatorLookup
+from django.db.models.fields.json import HasKeyLookup, KeyTransform
 
 
 class DatabaseOperations(BaseDatabaseOperations):
@@ -72,6 +74,9 @@ class DatabaseOperations(BaseDatabaseOperations):
         field_name = self._convert_field_to_tz(field_name, tzname)
         # https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC
         return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
+
+    def json_cast_text_sql(self, field_name):
+        return '(%s)::text' % field_name
 
     def time_trunc_sql(self, lookup_type, field_name):
         return "DATE_TRUNC('%s', %s)::time" % (lookup_type, field_name)
@@ -288,3 +293,7 @@ StrIndex.as_postgresql_subset = StrIndex.as_postgresql
 Log.as_postgresql_subset = Log.as_postgresql
 FixDecimalInputMixin.as_postgresql_subset = FixDecimalInputMixin.as_postgresql
 PostgreSQLSHAMixin.as_postgresql_subset = PostgreSQLSHAMixin.as_postgresql
+
+PostgresOperatorLookup.as_postgresql_subnet = PostgresOperatorLookup.as_postgresql
+HasKeyLookup.as_postgresql_subset = HasKeyLookup.as_postgresql
+KeyTransform.as_sql = KeyTransform.as_postgresql
