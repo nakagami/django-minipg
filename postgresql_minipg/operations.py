@@ -4,8 +4,9 @@ from django.db.backends.base.operations import BaseDatabaseOperations
 from django.db.models.functions import Cast, Now, StrIndex, Log
 from django.db.models.functions.text import PostgreSQLSHAMixin
 from django.db.models.functions.math import FixDecimalInputMixin
-from django.db.models.lookups import PostgresOperatorLookup
-from django.db.models.fields.json import HasKeyLookup, KeyTransform
+from django.db.models.fields.json import (
+    DataContains, ContainedBy, HasKeyLookup, KeyTransform
+)
 
 
 class DatabaseOperations(BaseDatabaseOperations):
@@ -294,6 +295,9 @@ Log.as_postgresql_subset = Log.as_postgresql
 FixDecimalInputMixin.as_postgresql_subset = FixDecimalInputMixin.as_postgresql
 PostgreSQLSHAMixin.as_postgresql_subset = PostgreSQLSHAMixin.as_postgresql
 
-PostgresOperatorLookup.as_postgresql_subnet = PostgresOperatorLookup.as_postgresql
+# monkey patch for JSON field
+DataContains.as_postgresql_subset = DataContains.as_postgresql
+ContainedBy.as_postgresql_subset = ContainedBy.as_postgresql
 HasKeyLookup.as_postgresql_subset = HasKeyLookup.as_postgresql
-KeyTransform.as_sql = KeyTransform.as_postgresql
+KeyTransform.as_postgresql_subset = KeyTransform.as_postgresql
+
