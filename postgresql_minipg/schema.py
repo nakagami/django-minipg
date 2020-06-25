@@ -10,9 +10,13 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     sql_set_sequence_max = "SELECT setval('%(sequence)s', MAX(%(column)s)) FROM %(table)s"
     sql_set_sequence_owner = 'ALTER SEQUENCE %(sequence)s OWNED BY %(table)s.%(column)s'
 
-    sql_create_index = "CREATE INDEX %(name)s ON %(table)s%(using)s (%(columns)s)%(extra)s%(condition)s"
+    sql_create_index = (
+        'CREATE INDEX %(name)s ON %(table)s%(using)s '
+        '(%(columns)s)%(include)s%(extra)s%(condition)s'
+    )
     sql_create_index_concurrently = (
-        "CREATE INDEX CONCURRENTLY %(name)s ON %(table)s%(using)s (%(columns)s)%(extra)s%(condition)s"
+        'CREATE INDEX CONCURRENTLY %(name)s ON %(table)s%(using)s '
+        '(%(columns)s)%(include)s%(extra)s%(condition)s'
     )
     sql_delete_index = "DROP INDEX IF EXISTS %(name)s"
     sql_delete_index_concurrently = "DROP INDEX CONCURRENTLY IF EXISTS %(name)s"
@@ -21,7 +25,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     # transaction.
     sql_create_column_inline_fk = (
         'CONSTRAINT %(name)s REFERENCES %(to_table)s(%(to_column)s)%(deferrable)s'
-        '; SET CONSTRAINTS %(name)s IMMEDIATE'
+        '; SET CONSTRAINTS %(namespace)s%(name)s IMMEDIATE'
     )
     # Setting the constraint to IMMEDIATE runs any deferred checks to allow
     # dropping it in the same transaction.
@@ -35,7 +39,6 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         if self.connection.connection:
             return self.connection.connection.escape_parameter(value)
         return value
-
 
     def _field_indexes_sql(self, model, field):
         output = super()._field_indexes_sql(model, field)
@@ -197,10 +200,11 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     def _create_index_sql(
         self, model, fields, *, name=None, suffix='', using='',
         db_tablespace=None, col_suffixes=(), sql=None, opclasses=(),
-        condition=None, concurrently=False,
+        condition=None, concurrently=False, include=None,
     ):
         sql = self.sql_create_index if not concurrently else self.sql_create_index_concurrently
         return super()._create_index_sql(
             model, fields, name=name, suffix=suffix, using=using, db_tablespace=db_tablespace,
             col_suffixes=col_suffixes, sql=sql, opclasses=opclasses, condition=condition,
+            include=include,
         )
