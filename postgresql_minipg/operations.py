@@ -43,7 +43,8 @@ class DatabaseOperations(BaseDatabaseOperations):
         else:
             return "EXTRACT('%s' FROM %s)" % (lookup_type, field_name)
 
-    def date_trunc_sql(self, lookup_type, field_name):
+    def date_trunc_sql(self, lookup_type, field_name, tzname=None):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         # https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC
         return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
 
@@ -55,7 +56,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         return tzname
 
     def _convert_field_to_tz(self, field_name, tzname):
-        if settings.USE_TZ:
+        if tzname and settings.USE_TZ:
             field_name = "%s AT TIME ZONE '%s'" % (field_name, self._prepare_tzname_delta(tzname))
         return field_name
 
@@ -76,14 +77,9 @@ class DatabaseOperations(BaseDatabaseOperations):
         # https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC
         return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
 
-    def json_cast_text_sql(self, field_name):
-        return '(%s)::text' % field_name
-
-    def time_trunc_sql(self, lookup_type, field_name):
+    def time_trunc_sql(self, lookup_type, field_name, tzname=None):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         return "DATE_TRUNC('%s', %s)::time" % (lookup_type, field_name)
-
-    def json_cast_text_sql(self, field_name):
-        return '(%s)::text' % field_name
 
     def deferrable_sql(self):
         return " DEFERRABLE INITIALLY DEFERRED"
@@ -193,21 +189,6 @@ class DatabaseOperations(BaseDatabaseOperations):
                         )
                     )
                     break  # Only one AutoField is allowed per model, so don't bother continuing.
-            for f in model._meta.many_to_many:
-                if not f.remote_field.through:
-                    output.append(
-                        "%s setval(pg_get_serial_sequence('%s','%s'), "
-                        "coalesce(max(%s), 1), max(%s) %s null) %s %s;" % (
-                            style.SQL_KEYWORD('SELECT'),
-                            style.SQL_TABLE(qn(f.m2m_db_table())),
-                            style.SQL_FIELD('id'),
-                            style.SQL_FIELD(qn('id')),
-                            style.SQL_FIELD(qn('id')),
-                            style.SQL_KEYWORD('IS NOT'),
-                            style.SQL_KEYWORD('FROM'),
-                            style.SQL_TABLE(qn(f.m2m_db_table()))
-                        )
-                    )
         return output
 
     def prep_for_iexact_query(self, x):
@@ -294,7 +275,6 @@ class DatabaseOperations(BaseDatabaseOperations):
     def ignore_conflicts_suffix_sql(self, ignore_conflicts=None):
         return 'ON CONFLICT DO NOTHING' if ignore_conflicts else super().ignore_conflicts_suffix_sql(ignore_conflicts)
 
-Cast.as_postgresql_subset = Cast.as_postgresql
 Now.as_postgresql_subset = Now.as_postgresql
 StrIndex.as_postgresql_subset = StrIndex.as_postgresql
 Log.as_postgresql_subset = Log.as_postgresql
@@ -306,4 +286,3 @@ DataContains.as_postgresql_subset = DataContains.as_postgresql
 ContainedBy.as_postgresql_subset = ContainedBy.as_postgresql
 HasKeyLookup.as_postgresql_subset = HasKeyLookup.as_postgresql
 KeyTransform.as_postgresql_subset = KeyTransform.as_postgresql
-
