@@ -16,6 +16,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         skips.update({
             "skip on django-minipg": {
                 'schema.tests.SchemaTests',
+                'model_fields.test_jsonfield.TestQuerying',
             }
         })
         return skips

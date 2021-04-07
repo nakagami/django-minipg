@@ -285,4 +285,16 @@ JSONObject.as_postgresql_subset = JSONObject.as_postgresql
 # monkey patch for JSON field
 PostgresOperatorLookup.as_postgresql_subset = PostgresOperatorLookup.as_postgresql
 HasKeyLookup.as_postgresql_subset = HasKeyLookup.as_postgresql
-KeyTransform.as_postgresql_subset = KeyTransform.as_postgresql
+
+
+def key_transform(self, compiler, connection):
+    lhs, params, key_transforms = self.preprocess_lhs(compiler, connection)
+    if len(key_transforms) > 1:
+        sql = '((%s::jsonb) %s %%s)' % (lhs, self.postgres_nested_operator)
+        return sql, tuple(params) + (key_transforms,)
+    try:
+        lookup = int(self.key_name)
+    except ValueError:
+        lookup = self.key_name
+    return '((%s::jsonb) %s %%s)' % (lhs, self.postgres_operator), tuple(params) + (lookup,)
+KeyTransform.as_postgresql_subset = key_transform
