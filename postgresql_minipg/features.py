@@ -8,8 +8,14 @@ class DatabaseFeatures(BaseDatabaseFeatures):
 
     @cached_property
     def test_collations(self):
-        return {
-            'non_default': 'sv-x-icu',
-            'swedish_ci': 'sv-x-icu',
-        }
         return {}
+
+    @cached_property
+    def django_test_skips(self):
+        skips = super().django_test_skips
+        skips.update({
+            "skip on django-minipg": {
+                'schema.tests.SchemaTests',
+            }
+        })
+        return skips
