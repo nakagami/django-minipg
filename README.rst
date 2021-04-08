@@ -6,7 +6,7 @@ Django PostgreSQL database backend with minipg
 Environment
 -------------
 
-* Django 2.2, 3.0, 3.1
+* Django 2.2, 3.0, 3.1, 3.2
 * minipg (https://github.com/nakagami/minipg)
 
 Restriction
@@ -24,6 +24,7 @@ Django(a.b)   django-minipg
 2.2           0.3.5
 3.0           0.4.0
 3.1           0.4.1
+3.2           0.4.2
 ============= ===================
 
 

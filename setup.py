@@ -15,7 +15,7 @@ classifiers = [
 ]
 
 setup(name='django-minipg', 
-        version='0.4.1',
+        version='0.4.2',
         description='Django database backend for minipg',
         long_description=open('README.rst').read(),
         url='https://github.com/nakagami/django-minipg/',
