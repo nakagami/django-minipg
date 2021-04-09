@@ -1,7 +1,10 @@
 django-minipg
 ==============
 
-Django PostgreSQL database backend with minipg
+Django PostgreSQL database backend with minipg.
+
+minipg and django-minipg written in pure python.
+So, this may work in environments where psycopg2 does not work.
 
 Environment
 -------------
@@ -18,14 +21,14 @@ Restriction
 Versions
 --------------------
 
-============= ===================
-Django(a.b)   django-minipg
-============= ===================
+============= ======================
+Django(a.b)   django-minipg(x.y.z)
+============= ======================
 2.2           0.3.5
 3.0           0.4.0
 3.1           0.4.1
 3.2           0.4.2
-============= ===================
+============= ======================
 
 
 
